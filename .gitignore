@@ -1,0 +1,6 @@
+slurm*
+.snakemake/
+core.*
+.R*
+.Rproj.user
+analysis/

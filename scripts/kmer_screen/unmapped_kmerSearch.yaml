@@ -1,0 +1,15 @@
+# Base outdirectory
+out_dir: /abs/path/
+
+# Directory containing mapped bam file
+bam_dir: /abs/path/bam_dir/
+ext: .merged.marked_dup.bam
+
+# Parameters for kmer search
+kmer_length: 27 # Length of kmer
+kmer_diffs: 0  # Number of kmer mismatches that will be tolerated
+
+# Sample names
+samp_prefixes:
+  - samp1
+  - samp2
