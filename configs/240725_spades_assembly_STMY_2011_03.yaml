@@ -1,0 +1,11 @@
+# Base outdirectory
+out_dir: /labs/kingsley/ambenj/TSIV/analysis/
+
+# Directory containing reads for assembly
+fastq_dir: /labs/kingsley/ambenj/TSIV/analysis/kmer_search_206genomes/01_unmapped_reads
+f_ext: _1.fq
+r_ext: _2.fq
+
+# Sample names
+samp_prefixes:
+  - STMY_X_2011_03
