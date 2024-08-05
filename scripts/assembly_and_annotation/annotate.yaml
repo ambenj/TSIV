@@ -1,0 +1,8 @@
+# Base outdirectory
+out_dir: /abs/path/
+
+# Assembly file
+assembly: /abs/path/contigs.fa
+
+# prefix for output files
+prefix: assembly_name
