@@ -18,6 +18,8 @@ rule all:
     input:
         expand(join(OUTDIR, "geneMarkS_{samp}", "{samp}_GeneMarkS_blastn.tsv"), samp=SAMP),
         expand(join(OUTDIR, "geneMarkS_{samp}", "{samp}_GeneMarkS_blastp.tsv"), samp=SAMP),
+        expand(join(OUTDIR, "geneMarkS_{samp}", "{samp}_GeneMarkS_blastn_ISKNV_AF371960.1.tsv"), samp=SAMP),
+        expand(join(OUTDIR, "geneMarkS_{samp}", "{samp}_GeneMarkS_blastp_ISKNV_AF371960.1.tsv"), samp=SAMP),
 
 
 ###############################################################
@@ -80,3 +82,41 @@ rule blastp_genemark:
         blastp -query {input} -db {params.db} -num_threads {threads} -out {output.blast} -evalue 1 \
         -outfmt "6 qseqid sseqid evalue stitle pident length mismatch gapopen qstart qend sstart send bitscore sscinames scomnames staxid sacc"
     """
+
+# Blast CDS nucleotide sequences called by geneMarkS against custom ISKNV database
+rule blastn_ISKNV:
+    input:
+        rules.geneMarkS.output.fnn
+    output:
+        blast = join(OUTDIR, "geneMarkS_{samp}/{samp}_GeneMarkS_blastn_ISKNV_AF371960.1.tsv"),
+    params:
+        db = "/labs/kingsley/ambenj/TSIV/analysis/other_virus_sequences/ISKNV_AF371960.1/ISKNV_AF371960.1_orf_nucleotides.fasta",
+    threads: 16
+    resources:
+        mem = 48,
+        time = 24
+    shell: """
+        module load ncbi-blast/2.15.0+
+        blastn -task dc-megablast \
+        -outfmt "6 qseqid sseqid evalue stitle pident length mismatch gapopen qstart qend sstart send bitscore" \
+        -query {input} -db {params.db} -num_threads {threads} -out {output.blast} -evalue 0.05
+    """
+
+# Blast translated CDS called by geneMarkS against custom ISKNV database
+rule blastp_ISKNV:
+    input:
+        rules.geneMarkS.output.faa
+    output:
+        blast = join(OUTDIR, "geneMarkS_{samp}/{samp}_GeneMarkS_blastp_ISKNV_AF371960.1.tsv"),
+    params:
+        db = "/labs/kingsley/ambenj/TSIV/analysis/other_virus_sequences/ISKNV_AF371960.1/ISKNV_AF371960.1_orf_proteins.fasta",
+    threads: 16
+    resources:
+        mem = 48,
+        time = 24
+    shell: """
+        module load ncbi-blast/2.15.0+
+        blastp -query {input} -db {params.db} -num_threads {threads} -out {output.blast} -evalue 0.05 \
+        -outfmt "6 qseqid sseqid evalue stitle pident length mismatch gapopen qstart qend sstart send bitscore"
+    """
+

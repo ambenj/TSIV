@@ -1,0 +1,8 @@
+# Base outdirectory
+out_dir: /labs/kingsley/ambenj/TSIV/analysis/assembly/03_annotate
+
+# Assembly file
+assembly: /labs/kingsley/ambenj/TSIV/analysis/assembly/02_spades/STMY_X_2011_03_M/TSIV_STMY_X_2011_03_M_contigs.fasta
+
+# prefix for output files
+prefix: TSIV_STMY_X_2011_03_M_contigs
