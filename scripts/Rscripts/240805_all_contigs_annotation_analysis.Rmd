@@ -16,7 +16,7 @@ library(tidyverse); theme_set(theme_bw())
 ```{r}
 # Input files
 gff_file <- "../../analysis/assembly/03_annotate/geneMarkS_STMY_X_2011_03_M_all/STMY_X_2011_03_M_all_GeneMarkS.gff"
-blastn_file <- "../../analysis/assembly/03_annotate/geneMarkS_STMY_X_2011_03_M_all/STMY_X_2011_03_M_all_GeneMarkS_blastn.tsv"
+blastn_file <- "../../analysis/assembly/03_annotate/geneMarkS_STMY_X_2011_03_M_all/STMY_X_2011_03_M_all_GeneMarkS_blastp.tsv"
 ```
 
 ```{r}
@@ -37,6 +37,17 @@ gff <- read_tsv(gff_file, comment = "#", col_names = c(
 
 gff
 ```
+```{r}
+# Get number of predicted ORFs on each sequence
+gff %>% 
+  mutate(NODE_temp = str_remove(seqid, "NODE_")) %>% 
+  separate(NODE_temp, sep="_", into=c("NODE"), remove = TRUE) %>% 
+  mutate(NODE = as.numeric(NODE)) %>% 
+  group_by(NODE) %>% 
+  summarize(n=n()) %>% 
+  arrange(NODE)
+```
+
 
 ```{r}
 # Read blastn results
@@ -94,12 +105,48 @@ blastn %>%
   arrange(-bitscore)
 ```
 
+```{r}
+# How many genes are annotated for NODE_71?
+gff %>% 
+    filter(grepl('NODE_71_', seqid))
+
+# What blast hits does that gene_134 have?
+blastn %>% 
+  filter(grepl('gene_134\\|', qseqid)) %>% 
+  arrange(-bitscore)
+
+```
+
 NODE_1, NODE_2, and NODE_3 are definitely iridovirus genome sequence. They have a consistent level level of coverage (~15-16x depth when reads are remapped). 
  
-NODE_8 is 2597 bp long and has only one ORF annotated (gene_99). The coverage is also much higher than the other iridovirus contigs (~97x). The nucleotide sequence has strong blast hits for a few fish genome assemblies (lantern fish, European smelt, large-eye snaggletooth) followed by hits to a European chub iridovirus isolate and scale drop disease virus isolate. From a BLASTP search, this is a B22 protein (same one that we have been interested in!). Could there be multiple copies of this B22 in the iridovirus genome???
+NODE_8 is 2597 bp long and has only one ORF annotated (gene_99). The coverage is also much higher than the other iridovirus contigs (~97x). The nucleotide sequence has strong blast hits for a few fish genome assemblies (lantern fish, European smelt, large-eye snaggletooth) followed by hits to a European chub iridovirus isolate and scale drop disease virus isolate. From a BLASTP search, this is a B22 protein (same one that we have been interested in!). STMY_2011_03 is positive for the herpesvirus integration so I wonder if this contig is actually the integration rather than a TSIV assembly
 
 NODE_18 is 2146 bp long and has two ORFs annotated (gene_105, gene_106). The read depth is consistent with the first three iridovirus contigs (~15.5x). The gene_105 nucleotide sequence has the strongest blast hits for iridovirus genomes but interestingly also has a hit for "PREDICTED: Gasterosteus aculeatus aculeatus ribonucleoside-diphosphate reductase subunit M2 (LOC120815250), mRNA". The strongest protein blast hits are for ribonucleotide reductase beta/small subunits from iridoviruses. This does seem like perhaps a host gene that was picked up in iridoviruses. The gene_106 nucleotide sequence has no blast hits but the protein sequence does have hits for lamin-type epidermal growth factors found in other iridoviruses. Overall it does seem like NODE_18 should be considered part of the iridovirus reference genome.
 
+```{r}
+# Filter to just TSIV contigs
+TSIV_gff <- gff %>% 
+  filter(grepl('NODE_1_|NODE_2_|NODE_3_|NODE_18_|NODE_71', seqid))
+
+# Filter to just blastn results on TSIV contigs
+TSIV_blastn <- inner_join(blastn, TSIV_gff, by = join_by(gene_id))
+
+# Counts number of results by gene_id
+TSIV_blastn %>%
+  group_by(gene_id) %>% 
+  summarise(n=n()) %>% 
+  arrange(-n)
+```
+
+
+```{r}
+# Get TSIV blast hits from Frog Virus 3 (FV3; taxID: 10493)
+TSIV_blastn %>%
+  filter(staxid == 10493) %>% 
+  group_by(gene_id) %>% 
+  summarise(n=n()) %>% 
+  arrange(-n)
+```
 
 
 
