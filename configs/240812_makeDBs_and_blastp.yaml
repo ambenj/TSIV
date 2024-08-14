@@ -1,0 +1,25 @@
+# Base outdirectory for blastp results
+out_dir: /labs/kingsley/ambenj/TSIV/analysis/assembly/04_blastp_iridoviruses
+
+# Query protein fasta file
+query_prot_fa: /labs/kingsley/ambenj/TSIV/analysis/assembly/03_annotate/geneMarkS_TSIV_STMY_X_2011_03_M_contigs/TSIV_STMY_X_2011_03_M_contigs_GeneMarkS.gff.faa
+
+# Directory with subject protein fasta files
+subject_fa_dir: /labs/kingsley/ambenj/TSIV/analysis/other_virus_sequences/protein_DBs
+
+# Prefixes for subject protein fasta files
+subject_prot_fa_prefixes:
+  - ATV_AY150217.1_orf_proteins
+  - ECIV_MK637631.1_orf_proteins
+  - FV3_AY548484.1_orf_proteins
+  - GIV_AY666015.1_orf_proteins
+  - IIV-3_DQ643392.1_orf_proteins
+  - IIV-6_AF303741.1_orf_proteins
+  - ISKNV_AF371960.1_orf_proteins
+  - LCDV-1_L63545.1_orf_proteins
+  - LCDV-China_AY380826.1_orf_proteins
+  - OSGIV_AY894343.1_orf_proteins
+  - RBIV_AY532606.1_orf_proteins
+  - SDDV_KR139659.1_orf_proteins
+  - SGIV_AY521625.1_orf_proteins
+  - TFV_AF389451.1_orf_proteins
