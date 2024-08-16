@@ -13,7 +13,7 @@ library(fs)
 
 ```{r}
 # Input files
-acc_file <- "/labs/kingsley/ambenj/TSIV/resources/240812_genomes_for_core_gene_analysis.txt"
+acc_file <- "/labs/kingsley/ambenj/TSIV/resources/240814_genomes_for_core_gene_analysis.txt"
 core_genes_file <- "/labs/kingsley/ambenj/TSIV/resources/Eaton2007_iridovirus_core_genes.txt"
 blastp_folder <- "/labs/kingsley/ambenj/TSIV/analysis/assembly/04_blastp_iridoviruses"
 
@@ -98,10 +98,10 @@ TSIV_core_genes_blastp
 # Get genbank sourced annotations and TSIV for core genes
 
 ```{r}
-# Get top results fr
+# Get top results for Genbank annotation viruses
 genbank_core_genes <- top_blastp %>% 
   left_join(., acc, by="virus_accession") %>% 
-  filter(Annotations=="Genbank") %>% 
+  filter(Annotations=="Genbank", Core_protein_alignment=="yes") %>% 
   left_join(TSIV_core_genes_blastp, .)
 genbank_core_genes
 ```
