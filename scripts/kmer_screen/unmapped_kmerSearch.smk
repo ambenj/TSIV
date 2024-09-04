@@ -45,7 +45,7 @@ rule extract:
         mem = 24,
         time = 24
     shell: """
-        module load samtools/1.13
+        module load samtools/1.20
         cd $TMPDIR
         samtools sort -n -@ {threads} {input.bam} | \
         samtools fastq -@ {threads} -t -T BX -f 4 -1 {output.R1} -2 {output.R2} -s {output.s} -
@@ -104,6 +104,9 @@ rule search_kmers:
         R1_DNAPol = join(OUTDIR, "02_kmer_search/DNAPol/{samp}_1.fq"),
         R2_DNAPol = join(OUTDIR, "02_kmer_search/DNAPol/{samp}_2.fq"),
         stats_DNAPol = join(OUTDIR, "02_kmer_search/DNAPol/{samp}_stats.txt"),
+    resources:
+        mem = 12,
+        time = 6
     shell:"""
         module load bbmap/39.01
 

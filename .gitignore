@@ -4,4 +4,6 @@ core.*
 .R*
 .Rproj.user
 analysis/
+analysis_STMY_2012_42/
 resources/
+raw/

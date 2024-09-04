@@ -1,5 +1,5 @@
 # Base outdirectory
-out_dir: /labs/kingsley/ambenj/TSIV/analysis
+out_dir: /labs/kingsley/ambenj/TSIV/analysis/kmer_search_206genomes
 
 # Directory containing mapped bam file
 bam_dir: /labs/kingsley/shared_data/stickleback_data/227_genomes_gasAcu1-4/bams
