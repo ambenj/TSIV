@@ -1,0 +1,86 @@
+# Base outdirectory for blastn results
+out_dir: /labs/kingsley/ambenj/TSIV/analysis/assembly/06_blastn_iridoviruses
+
+# Query nucleotide fasta file
+query_nucl_fa: /labs/kingsley/ambenj/TSIV/analysis/assembly/03_annotate/geneMarkS_TSIV_STMY_X_2011_03_M_contigs/TSIV_STMY_X_2011_03_M_contigs_GeneMarkS.gff.fnn
+
+# Directory with subject nucleotide fasta files
+subject_fa_dir: /labs/kingsley/ambenj/TSIV/analysis/other_virus_sequences/nucleotide_DBs
+
+# Prefixes for subject nucleotide fasta files
+subject_nucl_fa_prefixes:
+  - ATV_AY150217.1_orf_nucleotides
+  - FV3_AY548484.1_orf_nucleotides
+  - GIV_AY666015.1_orf_nucleotides
+  - IIV-3_DQ643392.1_orf_nucleotides
+  - IIV-6_AF303741.1_orf_nucleotides
+  - ISKNV_AF371960.1_orf_nucleotides
+  - LCDV-1_L63545.1_orf_nucleotides
+  - LCDV-China_AY380826.1_orf_nucleotides
+  - OSGIV_AY894343.1_orf_nucleotides
+  - RBIV-KOR_TY1_AY532606.1_orf_nucleotides
+  - SGIV_AY521625.1_orf_nucleotides
+  - TFV_AF389451.1_orf_nucleotides
+  - AFIV-16_MK689685.1_orf_nucleotides
+  - BCIV-WVL17393_2012_MN432490.1_orf_nucleotides
+  - BCIV-2017_MT926123.1_orf_nucleotides
+  - ECIV-LEC15001_MK637631.1_orf_nucleotides
+  - GSIV-K1_KT804738.1_orf_nucleotides
+  - RSIV-HGIV_Cantik_2014_MW883598.1_orf_nucleotides
+  - ISKNV-ASB_23_PP151097.1_orf_nucleotides
+  - ISKNV-TIV_2020_ON212400.1_orf_nucleotides
+  - ISKNV-Ghana_TIV_2019_OR670976.1_orf_nucleotides
+  - BCIV-2015_MW883595.1_orf_nucleotides
+  - ISKNV-KU2_MT128667.1_orf_nucleotides
+  - ISKNV-OGIV_PW_2018_MW883606.1_orf_nucleotides
+  - ISKNV-KU1_MT128666.1_orf_nucleotides
+  - ISKNV-EFIV_2019_MW273354.1_orf_nucleotides
+  - ISKNV-EFIV_2018_MW273353.1_orf_nucleotides
+  - ISKNV-LakeVolta_BF_2_OQ513807.1_orf_nucleotides
+  - ISKNV-TTIV_2015_MW883599.1_orf_nucleotides
+  - ISKNV-NH_2021_OR356116.1_orf_nucleotides
+  - ISKNV-NH_2005_OP896201.1_orf_nucleotides
+  - ISKNV-TLIV_2011_MW883593.1_orf_nucleotides
+  - RSIV-Ku_KT781098.1_orf_nucleotides
+  - ISKNV-HGIV_2015_MW883603.1_orf_nucleotides
+  - ISKNV-OGIV_YK-2018_MW883605.1_orf_nucleotides
+  - ISKNV-DGIV_2010_MW883604.1_orf_nucleotides
+  - ISKNV-HGIV_Cantik1_2014_MW883596.1_orf_nucleotides
+  - ISKNV-HGIV_Cantik2_2014_MW883597.1_orf_nucleotides
+  - ISKNV-TLIV_2015_MW883601.1_orf_nucleotides
+  - ISKNV-XMIV_2015_MW883602.1_orf_nucleotides
+  - ISKNV-Bali_Hybrid_grouper_2016_SVC_18_009_MW464172.1_orf_nucleotides
+  - ISKNV-Bali_Hybrid_grouper_2016_SVC_18_072_MW557381.1_orf_nucleotides
+  - ISKNV-XHIV_2015_MW883600.1_orf_nucleotides
+  - ISKNV-OGIV_HN_2018_001_PP974677.1_orf_nucleotides
+  - ISKNV-AK_OR536350.1_orf_nucleotides
+  - ISKNV-TTIV_2011_MW883594.1_orf_nucleotides
+  - LYCIV-ZS_3_OL774655.1_orf_nucleotides
+  - LYCIV-Zhoushan_MW139932.1_orf_nucleotides
+  - LYCIV-ZS_2_OL774654.1_orf_nucleotides
+  - LYCIV-ZS_1_OL774653.1_orf_nucleotides
+  - LYCIV_AY779031.1_orf_nucleotides
+  - LBUSV-GZ_OP009387.1_orf_nucleotides
+  - FD201807_OQ475017.1_orf_nucleotides
+  - PIV-2014a_MK098186.1_orf_nucleotides
+  - PIV-2010_MK098185.1_orf_nucleotides
+  - PIV-2016_MK098187.1_orf_nucleotides
+  - RSIV-KagYT_96_MK689686.1_orf_nucleotides
+  - RSIV-RIE12_1_AP017456.1_orf_nucleotides
+  - RSIV-Ehime_1_AB104413.1_orf_nucleotides
+  - RSIV-17SbTy_OK042108.1_orf_nucleotides
+  - RSIV-17RbGs_OK042109.1_orf_nucleotides
+  - RSIV-SBIV_VP13_ON740976.1_orf_nucleotides
+  - RSIV-SBIV_V12_ON743042.1_orf_nucleotides
+  - RSIV-121_MT798582.1_orf_nucleotides
+  - RBIV-C1_KC244182.1_orf_nucleotides
+  - SDDV-GF_MU1_MT521409.1_orf_nucleotides
+  - SDDV-Thai_2019_MN562489.1_orf_nucleotides
+  - SDDV-ZH_06_20_OM037668.1_orf_nucleotides
+  - SDDV-C4575_KR139659.1_orf_nucleotides
+  - LPIV-ZS_2021_OL310752.1_orf_nucleotides
+  - SACIV-KEY15001_MG570131.1_orf_nucleotides
+  - SKIV-TJ_ON075463.1_orf_nucleotides
+  - SKIV-SD_MT986830.1_orf_nucleotides
+  - TSGIV-TRT15003_MG570132.1_orf_nucleotides
+  - TRBIV_GQ273492.1_orf_nucleotides

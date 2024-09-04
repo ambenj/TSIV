@@ -1,0 +1,13 @@
+# Base outdirectory for blastn results
+out_dir: /abs/path/
+
+# Query nucleotide fasta file
+query_nucl_fa: /abs/path/query_nucleotides.fa
+
+# Directory with subject nucleotide fasta files
+subject_fa_dir: /abs/path/
+
+# Prefixes for subject nucleotide fasta files
+subject_nucl_fa_prefixes:
+  - subject1
+  - subject2

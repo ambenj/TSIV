@@ -1,0 +1,74 @@
+---
+title: "Major capsid protein nucleotide analysis"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r}
+# Load libraries
+library(tidyverse); theme_set(theme_bw())
+library(fs)
+```
+
+```{r}
+# Input files
+acc_file <- "/labs/kingsley/ambenj/TSIV/resources/240814_genomes_for_core_gene_analysis.txt"
+blastn_folder <- "/labs/kingsley/ambenj/TSIV/analysis/assembly/06_blastn_iridoviruses"
+
+# Output files
+MCP_gene_outfile <- "/labs/kingsley/ambenj/TSIV/analysis/assembly/06_blastn_iridoviruses/MCP_genes_needs_curation.txt"
+```
+
+```{r}
+# Read in accession file
+acc <- read_tsv(acc_file) %>% 
+  mutate(virus_accession = str_remove(File_prefix, '\\.1'))
+acc
+```
+
+```{r}
+# Read blastn results files
+files <- dir_ls(path = blastn_folder, glob = "*_blastn.tsv")
+
+# function to add file name to dataframe
+read_and_record_filename <- function(filename){
+  read_tsv(filename, col_names = c("qseqid", "sseqid", "evalue", "stitle", "pident", "length", "mismatch", "gapopen", "qstart", "qend", "sstart", "send", "bitscore"),
+           col_types = c("c", "c", "n", "c", "n", "i", "n", "n", "i", "i", "i", "i", "n")) %>%
+  mutate(filename = path_file(filename))
+}
+
+# gather files into one dataframe
+blastn <- map_df(files, read_and_record_filename) %>% 
+  separate(qseqid, into=c("TSIV_ORF"), sep="\\|", remove=FALSE, extra="drop") %>% 
+  mutate(TSIV_ORF = as.integer(str_remove(TSIV_ORF, "gene_"))) %>% 
+  separate(filename, into=c("virus_accession"), sep="\\.", extra="drop")
+blastn %>% 
+  arrange(TSIV_ORF)
+```
+
+```{r}
+# Find matches for TSIV major capsid protein (gene_15)
+mcp <- blastn %>% 
+  filter(TSIV_ORF == 15) %>% 
+  group_by(virus_accession) %>% 
+  arrange(-bitscore) %>% 
+  slice(1) %>% 
+  ungroup()
+
+mcp
+```
+
+```{r}
+ # Combine top mcp hit results with the accession table to see what is missing
+left_join(acc, mcp) %>% 
+  arrange(evalue)
+```
+```{r}
+# Make output file for curating and generating fasta
+left_join(acc, mcp) %>% 
+  select(virus_accession, Genus, Core_protein_alignment, sseqid) %>% 
+  write_tsv(MCP_gene_outfile)
+  
+```
+

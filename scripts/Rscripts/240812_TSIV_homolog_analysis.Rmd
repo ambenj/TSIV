@@ -61,7 +61,7 @@ blastp %>%
 top_blastp <- blastp %>%
   filter(evalue < 0.1) %>% 
   group_by(TSIV_ORF, virus_accession) %>% 
-  arrange(evalue) %>% 
+  arrange(evalue, -bitscore) %>% 
   slice(1) %>% 
   ungroup() %>% 
   arrange(TSIV_ORF)
