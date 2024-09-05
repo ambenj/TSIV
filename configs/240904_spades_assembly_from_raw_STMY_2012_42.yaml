@@ -1,0 +1,22 @@
+# Base outdirectory
+out_dir: /labs/kingsley/ambenj/TSIV/analysis_STMY_2012_42
+
+# Host reference genome for removing host reads
+ref: /labs/kingsley/ambenj/ref_genomes/gasAcu1-4/gasAcu1-4.fa
+
+# Directory containing reads for assembly
+fastq_dir: /labs/kingsley/ambenj/TSIV/raw/30-1064700814/00_fastq
+f_ext: _R1_001.fastq.gz
+r_ext: _R2_001.fastq.gz
+
+# Sample names
+samp_prefixes:
+  - STMY12-42
+
+# Subsampling fraction (i.e 0.1 is 10% of the reads)
+subsamp:
+  - 0.1
+  - 0.02
+  - 0.01
+  - 0.005
+  - 0.002

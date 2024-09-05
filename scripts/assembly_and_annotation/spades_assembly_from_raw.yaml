@@ -1,0 +1,23 @@
+# Base outdirectory
+out_dir: /abs/path/
+
+# Host reference genome for removing host reads
+ref: /abs/path/reference.fa
+
+# Directory containing reads for assembly
+fastq_dir: /abs/path/fastq_dir/
+f_ext: _1.fastq.gz
+r_ext: _2.fastq.gz
+
+# Sample names
+samp_prefixes:
+  - samp1
+  - 
+  
+# Subsampling fraction (i.e 0.1 is 10% of the reads)
+subsamp:
+  - 0.1
+  - 0.02
+  - 0.01
+  - 0.005
+  - 0.002
