@@ -1,0 +1,8 @@
+# Base outdirectory
+out_dir: /labs/kingsley/ambenj/TSIV/analysis_STMY_2012_42/assembly/03_annotate
+
+# Assembly file
+assembly: /labs/kingsley/ambenj/TSIV/analysis_STMY_2012_42/assembly/02_spades/STMY12-42_down0.005/TSIV_STMY_2012_42.fasta
+
+# prefix for output files
+prefix: TSIV_STMY_2012_42
