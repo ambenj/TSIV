@@ -21,5 +21,5 @@ mkdir -p ${OUTDIR}
 cd $OUTDIR
 mkdir -p output
 
-# Run 
+# Run SDT (updated with paths on system)
 python ${SDT}/SDT_Linux64_paths.py $FASTA mafft

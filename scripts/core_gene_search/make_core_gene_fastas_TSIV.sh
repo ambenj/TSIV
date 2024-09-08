@@ -1,16 +1,16 @@
 #!/bin/bash
 #SBATCH --job-name=core
 #SBATCH --ntasks=1
-#SBATCH --time=6:00:00
-#SBATCH --mem=16G
+#SBATCH --time=2:00:00
+#SBATCH --mem=4G
 #SBATCH --account=kingsley
 #SBATCH --partition=batch
 
 
 # Inputs
-PROTEINS="/labs/kingsley/ambenj/TSIV/analysis/assembly/04_blastp_iridoviruses/core_genes_TSIV.txt"
-PROTEIN_FASTA="/labs/kingsley/ambenj/TSIV/analysis/assembly/03_annotate/geneMarkS_TSIV_STMY_X_2011_03_M_contigs/TSIV_STMY_X_2011_03_M_contigs_GeneMarkS.gff.faa"
-OUT_DIR="/labs/kingsley/ambenj/TSIV/analysis/assembly/04_blastp_iridoviruses/core_proteins"
+PROTEINS="/labs/kingsley/ambenj/TSIV/analysis_STMY_2012_42/assembly/04_blastp_iridoviruses/core_genes_TSIV.txt"
+PROTEIN_FASTA="/labs/kingsley/ambenj/TSIV/analysis_STMY_2012_42/assembly/03_annotate/geneMarkS_TSIV_STMY_2012_42/TSIV_STMY_2012_42_GeneMarkS.gff.faa"
+OUT_DIR="/labs/kingsley/ambenj/TSIV/analysis_STMY_2012_42/assembly/04_blastp_iridoviruses/core_proteins"
 
 # Make directory if necessary and remove any prexisting files
 mkdir -p $OUT_DIR

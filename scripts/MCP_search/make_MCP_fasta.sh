@@ -8,9 +8,9 @@
 
 
 # Inputs
-LIST="/labs/kingsley/ambenj/TSIV/analysis/assembly/06_blastn_iridoviruses/MCP_genes_curated.txt"
+LIST="/labs/kingsley/ambenj/TSIV/analysis_STMY_2012_42/assembly/06_blastn_iridoviruses/MCP_genes_curated.txt"
 FASTA_DIR="/labs/kingsley/ambenj/TSIV/analysis/other_virus_sequences"
-OUT_DIR="/labs/kingsley/ambenj/TSIV/analysis/assembly/06_blastn_iridoviruses"
+OUT_DIR="/labs/kingsley/ambenj/TSIV/analysis_STMY_2012_42/assembly/06_blastn_iridoviruses"
 
 # Prepare output files
 ALL_GENOMES="${OUT_DIR}/MCP_all_genomes.fasta"
