@@ -1,0 +1,130 @@
+---
+title: "TSIV and other iridovirus homolog analysis"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r}
+# Load libraries
+library(tidyverse); theme_set(theme_bw())
+library(fs)
+```
+
+```{r}
+# Input files
+acc_file <- "/labs/kingsley/ambenj/TSIV/resources/240814_genomes_for_core_gene_analysis.txt"
+core_genes_file <- "/labs/kingsley/ambenj/TSIV/resources/Eaton2007_iridovirus_core_genes.txt"
+blastp_folder <- "/labs/kingsley/ambenj/TSIV/analysis_STMY_2012_42/assembly/04_blastp_iridoviruses"
+
+# Output files
+core_gene_outfile <- "/labs/kingsley/ambenj/TSIV/analysis_STMY_2012_42/assembly/04_blastp_iridoviruses/core_genes_needs_curation.txt"
+genbank_gene_outfile <- "/labs/kingsley/ambenj/TSIV/analysis_STMY_2012_42/assembly/04_blastp_iridoviruses/core_genes_genbank.txt"
+TSIV_gene_outfile <- "/labs/kingsley/ambenj/TSIV/analysis_STMY_2012_42/assembly/04_blastp_iridoviruses/core_genes_TSIV.txt"
+```
+
+```{r}
+# Read in accession file
+acc <- read_tsv(acc_file) %>% 
+  mutate(virus_accession = str_remove(File_prefix, '\\.1'))
+acc
+```
+
+```{r}
+# Read in core genes file
+core_genes <- read_tsv(core_genes_file)
+core_genes
+```
+# Get Eaton sequences for manual curations
+
+```{r}
+# Read blastp results files
+files <- dir_ls(path = blastp_folder, glob = "*_blastp.tsv")
+
+# function to add file name to dataframe
+read_and_record_filename <- function(filename){
+  read_tsv(filename, col_names = c("qseqid", "sseqid", "evalue", "stitle", "pident", "length", "mismatch", "gapopen", "qstart", "qend", "sstart", "send", "bitscore")) %>%
+  mutate(filename = path_file(filename))
+  }
+
+# gather files into one dataframe
+blastp <- map_df(files, read_and_record_filename) %>% 
+  separate(qseqid, into=c("TSIV_ORF"), sep="\\|", remove=FALSE, extra="drop") %>% 
+  mutate(TSIV_ORF = as.integer(str_remove(TSIV_ORF, "gene_"))) %>% 
+  separate(filename, into=c("virus_accession"), sep="\\.", extra="drop")
+blastp %>% 
+  arrange(TSIV_ORF)
+```
+
+```{r}
+# Get top hit for each accession for each TSIV ORF
+top_blastp <- blastp %>%
+  filter(evalue < 0.01) %>% 
+  group_by(TSIV_ORF, virus_accession) %>% 
+  arrange(evalue, -bitscore) %>% 
+  slice(1) %>% 
+  ungroup() %>% 
+  arrange(TSIV_ORF)
+top_blastp
+```
+
+```{r}
+# Get core gene table
+core_genes_blastp <- top_blastp %>% 
+  select(qseqid, TSIV_ORF, sseqid, virus_accession) %>% 
+  pivot_wider(id_cols = c("qseqid", "TSIV_ORF"), names_from = virus_accession, values_from = sseqid) %>% 
+  separate(FV3_AY548484, into=c("FV3"), sep="\\(", remove=FALSE, extra="drop") %>% 
+  left_join(core_genes, ., by=c("FV3")) %>% 
+  filter(!is.na(Order), !TSIV_ORF %in% c(82, 29)) %>% 
+  arrange(Order)
+
+core_genes_blastp
+```
+
+
+```{r}
+core_genes_blastp %>% 
+  write_tsv(core_gene_outfile)
+```
+
+```{r}
+# Get TSIV core genes
+TSIV_core_genes_blastp <- core_genes_blastp%>% 
+  select(Order, `Gene Name`, TSIV_ORF, qseqid)
+TSIV_core_genes_blastp
+```
+
+
+# Get genbank sourced annotations and TSIV for core genes
+
+```{r}
+# Get top results for Genbank annotation viruses
+genbank_core_genes <- top_blastp %>% 
+  left_join(., acc, by="virus_accession") %>% 
+  filter(Annotations=="Genbank", Core_protein_alignment=="yes") %>% 
+  left_join(TSIV_core_genes_blastp, .)
+genbank_core_genes
+```
+
+```{r}
+# Check all expected sequences are present
+genbank_core_genes %>% 
+  select(Order, `Gene Name`, qseqid, TSIV_ORF, sseqid, virus_accession) %>% 
+  pivot_wider(id_cols = c("Order", "Gene Name", "qseqid", "TSIV_ORF"), names_from = virus_accession, values_from = sseqid)
+```
+
+```{r}
+# Write output in long format to get protein sequences for genbank accessions
+genbank_core_genes %>% 
+  select(Order, `Gene Name`, virus_accession, sseqid) %>% 
+  arrange(virus_accession) %>% 
+  write_tsv(genbank_gene_outfile)
+```
+
+```{r}
+ # Write output in long format to get protein sequences for TSIV
+TSIV_core_genes_blastp %>% 
+  select(Order, `Gene Name`, qseqid) %>% 
+  write_tsv(TSIV_gene_outfile)
+```
+

@@ -1,0 +1,355 @@
+---
+title: "Prepare genome annotations for collinearity analysis"
+output:
+  html_document:
+    df_print: paged
+---
+
+
+```{r}
+library(tidyverse)
+```
+```{r}
+# Curated core genes tables
+eaton_core <- read_tsv("/labs/kingsley/ambenj/TSIV/analysis_STMY_2012_42/assembly/04_blastp_iridoviruses/core_genes_curated_long.txt")
+eaton_core
+
+# Get core genes for genbank annotations and clean up to just get protein accession
+genbank_core <- read_tsv("/labs/kingsley/ambenj/TSIV/analysis_STMY_2012_42/assembly/04_blastp_iridoviruses/core_genes_genbank_curated.txt") %>% 
+  separate(sseqid, c("nuc_acc", "prot", "prot_acc"), sep="_", remove = TRUE, extra = "drop") %>% 
+  select(Order, `Gene Name`, virus_accession, prot_acc)
+
+# Load TSIV core genes table
+TSIV_core <- read_tsv("/labs/kingsley/ambenj/TSIV/analysis_STMY_2012_42/assembly/04_blastp_iridoviruses/core_genes_TSIV.txt") %>% 
+  separate(qseqid, c("gene","orf"), sep="gene_|\\|", remove = TRUE, extra = "drop") %>% 
+  select(Order, `Gene Name`, orf)
+TSIV_core
+```
+
+
+```{r}
+# Get cleaned up core genes list for ISKNV
+ISKNV_core <- eaton_core %>% 
+  filter(Virus_accession == "ISKNV_AF371960") %>% 
+  separate(ORF, "orf", sep="\\(", remove = TRUE, extra = "drop")
+
+# Prepare ISKNV genome annotations and combine with core genes
+ISKNV_annot <- read_tsv("/labs/kingsley/ambenj/TSIV/analysis/other_virus_sequences/ISKNV_AF371960.1/Eaton2007_ISKNV_reannotations.bed",
+                      col_names = c("seq_id", "start", "end", "orf", "length", "strand")) %>% 
+  mutate(start = start + 1,
+         seq_id = "ISKNV",
+         bin_id = "ISKNV") %>% 
+  left_join(., ISKNV_core) %>% 
+  select(seq_id, start, end, strand, Order, `Gene Name`, bin_id)
+
+# Check all core genes present
+ISKNV_annot %>% 
+  filter(!is.na(Order)) %>% 
+  arrange(Order)
+
+# Write to outfile
+ISKNV_annot %>% 
+  write_tsv("/labs/kingsley/ambenj/TSIV/analysis/other_virus_sequences/ISKNV_AF371960.1/ISKNV_annot_for_collinearity.tsv")
+```
+
+
+```{r}
+# Get RSIV-Ehime_1 gff file and clean up
+RSIV_annot <- read_tsv("/labs/kingsley/ambenj/TSIV/analysis/other_virus_sequences/RSIV-Ehime_1_AB104413.1/RSIV-Ehime_1_AB104413.1.gff", comment = "#",
+                       col_names = c("seq_id", "source", "type", "start", "end", "score", "strand", "phase", "attributes")) %>% 
+  filter(type == "CDS") %>% 
+  separate(attributes, into=c("id", "prot_acc"), sep = "Name=|;Note", extra = "drop") %>% 
+  left_join(., genbank_core) %>%
+  mutate(seq_id = "RSIV",
+         bin_id = "RSIV") %>% 
+  select(seq_id, start, end, strand, Order, `Gene Name`, bin_id)
+  
+# Check all core genes present
+RSIV_annot %>% 
+  filter(!is.na(Order)) %>% 
+  arrange(Order)
+
+# Write annotations to outfile
+RSIV_annot %>% 
+  write_tsv("/labs/kingsley/ambenj/TSIV/analysis/other_virus_sequences/RSIV-Ehime_1_AB104413.1/RSIV_annot_for_collinearity.tsv")
+```
+
+```{r}
+# Get TRBIV gff file and clean up
+TRBIV_annot <- read_tsv("/labs/kingsley/ambenj/TSIV/analysis/other_virus_sequences/TRBIV_GQ273492.1/TRBIV_GQ273492.1.gff3", comment = "#",
+                       col_names = c("seq_id", "source", "type", "start", "end", "score", "strand", "phase", "attributes")) %>% 
+  filter(type == "CDS") %>% 
+  separate(attributes, into=c("id", "prot_acc"), sep = "-|;", extra = "drop") %>% 
+  left_join(., genbank_core) %>%
+  mutate(seq_id = "TRBIV",
+         bin_id = "TRBIV") %>% 
+  select(seq_id, start, end, strand, Order, `Gene Name`, bin_id)
+
+# Check all core genes present
+TRBIV_annot %>% 
+  filter(!is.na(Order)) %>% 
+  arrange(Order)
+
+# Write annotations to outfile
+TRBIV_annot %>% 
+  write_tsv("/labs/kingsley/ambenj/TSIV/analysis/other_virus_sequences/TRBIV_GQ273492.1/TRBIV_annot_for_collinearity.tsv")
+```
+
+```{r}
+# Get SDDV gff file and clean up
+SDDV_annot <- read_tsv("/labs/kingsley/ambenj/TSIV/analysis/other_virus_sequences/SDDV-C4575_KR139659.1/SDDV-C4575_KR139659.1.gff3", comment = "#",
+                       col_names = c("seq_id", "source", "type", "start", "end", "score", "strand", "phase", "attributes")) %>% 
+  filter(type == "CDS") %>% 
+  separate(attributes, into=c("id", "prot_acc"), sep = "-|;", extra = "drop") %>% 
+  left_join(., genbank_core) %>%
+  mutate(seq_id = "SDDV",
+         bin_id = "SDDV",
+        `Gene Name` = case_when(prot_acc == "AKU37520.1" ~ "B22",
+                                TRUE ~ `Gene Name`)) %>% 
+  select(seq_id, start, end, strand, Order, `Gene Name`, bin_id)
+  
+SDDV_annot
+
+# Check all core genes present
+SDDV_annot %>% 
+  filter(!is.na(Order)) %>% 
+  arrange(Order)
+
+# Write annotations to outfile
+SDDV_annot %>% 
+  write_tsv("/labs/kingsley/ambenj/TSIV/analysis/other_virus_sequences/SDDV-C4575_KR139659.1/SDDV_annot_for_collinearity.tsv")
+```
+
+```{r}
+# Get ECIV gff file and clean up
+ECIV_annot <- read_tsv("/labs/kingsley/ambenj/TSIV/analysis/other_virus_sequences/ECIV-LEC15001_MK637631.1/ECIV-LEC15001_MK637631.1.gff3", comment = "#",
+                       col_names = c("seq_id", "source", "type", "start", "end", "score", "strand", "phase", "attributes")) %>% 
+  filter(type == "CDS") %>% 
+  separate(attributes, into=c("id", "prot_acc"), sep = "-|;", extra = "drop") %>% 
+  left_join(., genbank_core) %>%
+  mutate(seq_id = "ECIV",
+         bin_id = "ECIV",
+         `Gene Name` = case_when(prot_acc == "QCQ67814.1" ~ "B22",
+                                TRUE ~ `Gene Name`)) %>% 
+  select(seq_id, start, end, strand, Order, `Gene Name`, bin_id)
+
+# Check all core genes present (yes but this one is known to be missing #23)
+ECIV_annot %>% 
+  filter(!is.na(Order)) %>% 
+  arrange(Order)
+
+# Write annotations to outfile
+ECIV_annot %>% 
+  write_tsv("/labs/kingsley/ambenj/TSIV/analysis/other_virus_sequences/ECIV-LEC15001_MK637631.1/ECIV_annot_for_collinearity.tsv")
+```
+
+
+```{r}
+# Get TSIV file and clean up
+TSIV_annot <- read_tsv("/labs/kingsley/ambenj/TSIV/analysis_STMY_2012_42/assembly/03_annotate/geneMarkS_TSIV_STMY_2012_42/TSIV_STMY_2012_42_GeneMarkS.gff", comment = "#",
+                       col_names = c("seq_id", "source", "type", "start", "end", "score", "strand", "phase", "attributes")) %>% 
+  filter(type == "CDS") %>% 
+  separate(attributes, into=c("id", "orf"), sep = "=|,", extra = "drop") %>% 
+  left_join(., TSIV_core) %>%
+  mutate(bin_id = "TSIV",
+         `Gene Name` = case_when(orf == "65" ~ "B22",
+                                TRUE ~ `Gene Name`)) %>% 
+  select(seq_id, start, end, strand, Order, `Gene Name`, bin_id)
+
+# Check all core genes present (yes but this one is known to be missing #22)
+TSIV_annot %>% 
+  filter(!is.na(Order)) %>% 
+  arrange(Order)
+
+# Write annotations to outfile
+TSIV_annot %>% 
+  write_tsv("/labs/kingsley/ambenj/TSIV/analysis_STMY_2012_42/assembly/03_annotate/geneMarkS_TSIV_STMY_2012_42/TSIV_annot_for_collinearity.tsv")
+```
+
+```{r}
+# Make file with all annotations
+rbind(RSIV_annot, ISKNV_annot, TRBIV_annot, TSIV_annot, SDDV_annot, ECIV_annot)
+```
+
+# Adjust annotations so ISKNV ORF1L equivalent is starting position
+
+- TSIV genome needs to be readjusted so ORF20 is the starting ORF and reversed to put it in the proper orientation
+- contig1 should be cut into contig1a and contig1b at the end of ORF20 (19767,20873)
+
+```{r}
+TSIV_annot_rearrange <- TSIV_annot %>% 
+  mutate(seq_id = case_when(seq_id == "contig1" & end < 20874 ~ "contig1a",
+                            seq_id == "contig1" & end >= 20874 ~ "contig1b",
+                            TRUE ~ seq_id),
+         start_new = case_when(seq_id == "contig1a" ~ 20874 - end,
+                               seq_id == "contig1b" ~ 79043 - end,
+                               seq_id == "contig2" ~ 36080 - end,
+                           TRUE ~ start),
+         end_new = case_when(seq_id == "contig1a" ~ 20874 - start,
+                             seq_id == "contig1b" ~ 79043 - start,
+                             seq_id == "contig2" ~ 36080 - start,
+                           TRUE ~ end),
+         strand_new = case_when(strand == "+" ~ "-",
+                                strand == "-" ~ "+"),
+         Order = case_when(`Gene Name` == "B22" ~ "B22",
+                           TRUE ~ as.character(Order))) %>% 
+  select(seq_id, start_new, end_new, strand_new, Order, `Gene Name`, bin_id) %>% 
+  rename(all_of(c(start = "start_new", end = "end_new", strand = "strand_new")))
+
+TSIV_annot_rearrange
+```
+
+- SDDV genome needs to be rearranged so ORF82R is the starting ORF and reverse to put it in the proper orientation
+- SDDV should be cut at the end of ORF82R (73912, 75024) into SDDVa and SDDVb
+
+```{r}
+SDDV_annot_rearrange <- SDDV_annot %>% 
+  mutate(seq_id = case_when(end < 75025 ~ "SDDVa",
+                            end >= 75025 ~ "SDDVb",
+                            TRUE ~ seq_id),
+         start_new = case_when(seq_id == "SDDVa" ~ 75025 - end,
+                               seq_id == "SDDVb" ~ 124244 - end,
+                           TRUE ~ start),
+         end_new = case_when(seq_id == "SDDVa" ~ 75025 - start,
+                             seq_id == "SDDVb" ~ 124244 - start,
+                           TRUE ~ end),
+         strand_new = case_when(strand == "+" ~ "-",
+                                strand == "-" ~ "+"),
+         Order = case_when(`Gene Name` == "B22" ~ "B22",
+                           TRUE ~ as.character(Order))) %>% 
+  select(seq_id, start_new, end_new, strand_new, Order, `Gene Name`, bin_id) %>% 
+  rename(all_of(c(start = "start_new", end = "end_new", strand = "strand_new")))
+
+SDDV_annot_rearrange
+```
+
+- ECIV needs to be rearranged so ORF1 is the first ORF but in the reverse orientation
+- So need to cut ECIV at the end of ORF1 (1,1125), then invert both sections
+
+```{r}
+ECIV_annot_rearrange <- ECIV_annot %>% 
+  mutate(seq_id = case_when(end < 1126 ~ "ECIVa",
+                            end >= 1126 ~ "ECIVb",
+                            TRUE ~ seq_id),
+         start_new = case_when(seq_id == "ECIVa" ~ 1126 - end,
+                               seq_id == "ECIVb" ~ 128216 - end,
+                           TRUE ~ start),
+         end_new = case_when(seq_id == "ECIVa" ~ 1126 - start,
+                             seq_id == "ECIVb" ~ 128216 - start,
+                           TRUE ~ end),
+         strand_new = case_when(strand == "+" ~ "-",
+                                strand == "-" ~ "+"),
+         Order = case_when(`Gene Name` == "B22" ~ "B22",
+                           TRUE ~ as.character(Order))) %>% 
+  select(seq_id, start_new, end_new, strand_new, Order, `Gene Name`, bin_id) %>% 
+  rename(all_of(c(start = "start_new", end = "end_new", strand = "strand_new")))
+
+ECIV_annot_rearrange
+```
+
+- RSIV-Ehime track needs to be reoriented. ISKNV_ORF1L corresponds to BAK14282.1 (71798,72934) which is in the forward orientation. Need to cut the genome and reverse the orienation
+
+```{r}
+RSIV_annot_rearrange <- RSIV_annot %>% 
+  mutate(seq_id = case_when(end < 72935 ~ "RSIVa",
+                            end >= 72935 ~ "RSIVb",
+                            TRUE ~ seq_id),
+         start_new = case_when(seq_id == "RSIVa" ~ 72935 - end,
+                               seq_id == "RSIVb" ~ 112415 - end,
+                           TRUE ~ start),
+         end_new = case_when(seq_id == "RSIVa" ~ 72935 - start,
+                             seq_id == "RSIVb" ~ 112415 - start,
+                           TRUE ~ end),
+         strand_new = case_when(strand == "+" ~ "-",
+                                strand == "-" ~ "+")) %>% 
+  select(seq_id, start_new, end_new, strand_new, Order, `Gene Name`, bin_id) %>% 
+  rename(all_of(c(start = "start_new", end = "end_new", strand = "strand_new")))
+
+RSIV_annot_rearrange
+```
+
+
+```{r}
+# Make file with all annotations
+all_genes_rearrange <- rbind(RSIV_annot_rearrange, ISKNV_annot, TRBIV_annot, TSIV_annot_rearrange, SDDV_annot_rearrange, ECIV_annot_rearrange)
+
+all_genes_rearrange %>% 
+  write_tsv("/labs/kingsley/ambenj/TSIV/analysis_STMY_2012_42/assembly/10_collinearity/gene_seq_rearranged.tsv")
+```
+
+# Make link tracks
+```{r}
+col_names = c(seq_id = "seq_id.x", start = "start.x", end = "end.x", bin_id = "bin_id.x",
+              seq_id2 = "seq_id.y", start2 = "start.y", end2 = "end.y", bin_id2 = "bin_id.y")
+
+# Make link track between RSIV-Ku and ISKNV
+RSIV_ISKNV_link <- RSIV_annot_rearrange %>% 
+  filter(!is.na(`Gene Name`)) %>% 
+  left_join(., ISKNV_annot, by = c("Order", "Gene Name")) %>% 
+  mutate(strand = case_when(strand.x != strand.y ~ "-",
+                            TRUE ~ "+")) %>% 
+  rename(all_of(col_names)) %>% 
+  select(seq_id, start, end, bin_id, seq_id2, start2, end2, bin_id2, strand, Order, `Gene Name`)
+
+RSIV_ISKNV_link
+```
+
+```{r}
+# Make link track between ISKNV and TRBIV
+ISKNV_TRBIV_link <- ISKNV_annot %>% 
+  filter(!is.na(`Gene Name`)) %>% 
+  left_join(., TRBIV_annot, by = c("Order", "Gene Name")) %>% 
+  mutate(strand = case_when(strand.x != strand.y ~ "-",
+                            TRUE ~ "+")) %>% 
+  rename(all_of(col_names)) %>% 
+  select(seq_id, start, end, bin_id, seq_id2, start2, end2, bin_id2, strand, Order, `Gene Name`)
+
+ISKNV_TRBIV_link
+```
+
+```{r}
+# Make link track between TRBIV and TSIV
+TRBIV_TSIV_link <- TRBIV_annot %>% 
+  mutate(Order = as.character(Order)) %>% 
+  filter(!is.na(`Gene Name`)) %>% 
+  left_join(., TSIV_annot_rearrange, by = c("Order", "Gene Name")) %>% 
+  mutate(strand = case_when(strand.x != strand.y ~ "-",
+                            TRUE ~ "+")) %>% 
+  rename(all_of(col_names)) %>% 
+  select(seq_id, start, end, bin_id, seq_id2, start2, end2, bin_id2, strand, Order, `Gene Name`)
+
+TRBIV_TSIV_link
+```
+
+```{r}
+# Make link track between TSIV and SDDV
+TSIV_SDDV_link <- TSIV_annot_rearrange %>% 
+  filter(!is.na(`Gene Name`)) %>% 
+  left_join(., SDDV_annot_rearrange, by = c("Order", "Gene Name")) %>% 
+  mutate(strand = case_when(strand.x != strand.y ~ "-",
+                            TRUE ~ "+")) %>% 
+  rename(all_of(col_names)) %>% 
+  select(seq_id, start, end, bin_id, seq_id2, start2, end2, bin_id2, strand, Order, `Gene Name`)
+
+TSIV_SDDV_link
+```
+
+```{r}
+# Make link track between SDDV and ECIV
+SDDV_ECIV_link <- SDDV_annot_rearrange %>% 
+  filter(!is.na(`Gene Name`)) %>% 
+  left_join(., ECIV_annot_rearrange, by = c("Order", "Gene Name")) %>% 
+  mutate(strand = case_when(strand.x != strand.y ~ "-",
+                            TRUE ~ "+")) %>% 
+  rename(all_of(col_names)) %>% 
+  select(seq_id, start, end, bin_id, seq_id2, start2, end2, bin_id2, strand, Order, `Gene Name`)
+
+SDDV_ECIV_link
+```
+
+```{r}
+# Join link tracks into one file
+rbind(RSIV_ISKNV_link, ISKNV_TRBIV_link, TRBIV_TSIV_link, TSIV_SDDV_link, SDDV_ECIV_link) %>% 
+  write_tsv("/labs/kingsley/ambenj/TSIV/analysis_STMY_2012_42/assembly/10_collinearity/links_rearranged.tsv")
+```
+
