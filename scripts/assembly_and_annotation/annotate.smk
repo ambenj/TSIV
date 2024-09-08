@@ -16,6 +16,7 @@ OUTDIR = abspath(OUTDIR)
 
 rule all:
     input:
+        expand(join(OUTDIR, "geneMarkS_{samp}/{samp}_GC.tsv"), samp=SAMP),
         expand(join(OUTDIR, "geneMarkS_{samp}", "{samp}_GeneMarkS_blastn.tsv"), samp=SAMP),
         expand(join(OUTDIR, "geneMarkS_{samp}", "{samp}_GeneMarkS_blastp.tsv"), samp=SAMP),
         expand(join(OUTDIR, "geneMarkS_{samp}", "{samp}_GeneMarkS_blastn_FV3_AY548484.1.tsv"), samp=SAMP),
@@ -64,6 +65,23 @@ rule blastn_genemark:
         -outfmt "6 qseqid sseqid evalue stitle pident length mismatch gapopen qstart qend sstart send bitscore sscinames scomnames staxid sacc" \
         -query {input} -db {params.db} -num_threads {threads} -out {output.blast} -evalue 1
     """
+
+###############################################################
+#################### Calculate CG content #####################
+###############################################################
+
+rule GC:
+    input: {ASSEMBLY}
+    output: join(OUTDIR, "geneMarkS_{samp}/{samp}_GC.tsv")
+    shell:"""
+        module load seqkit/2.3.1
+        seqkit stats -a {input} > {output}
+    """
+
+
+###############################################################
+######################## BLAST searches #######################
+###############################################################
 
 # Blast translated CDS called by geneMarkS
 rule blastp_genemark:
