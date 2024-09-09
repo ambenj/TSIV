@@ -8,3 +8,6 @@ analysis_STMY_2012_42/
 resources/
 raw/
 test_map.sh
+configs/old
+scripts/assembly_and_annotation/old
+scripts/B22_search
