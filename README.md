@@ -4,7 +4,7 @@ This repository contains the code used for following paper:
 
 Yoxsimer, A.M.; Offenberg, E.G.; Katzer, A.W.; Bell, M.A.; Massengill, R.L.; Kingsley, D.M. Genomic sequence of the threespine stickleback iridovirus (TSIV) from wild Gasterosteus in Stormy Lake, Alaska. 2024.
 
-*Note:these scripts were configured for analysis on the SCG Cluster at Stanford University and most would require adjusting paths and software in order to run elsewhere.*
+*Note: these scripts were configured for analysis on the SCG Cluster at Stanford University and most would require adjusting paths and software in order to run elsewhere.*
 
 ## Screen for kmers in stickleback genomes
 1. Extract unmapped reads
@@ -139,12 +139,27 @@ sbatch scripts/phylogeny/iqtree_B22.sh
 3. Prepare collinearity plots
 
 ```bash
-# Extract discordant read pairs
+# Extract discordant read pairs from STMY_2012_42 sample alignment to TSIV assembly
 module load samtools/1.20
 samtools view -f 1 -F 12 STMY12-42.aln.sorted.bam | awk '$3 == "NODE_1_length_79043_cov_150.476925" && $7 == "NODE_2_length_36080_cov_145.724195" || $3 == "NODE_2_length_36080_cov_145.724195" && $7 == "NODE_1_length_79043_cov_150.476925"' > discordant_pairs.txt
 
 # Plot read positions
 Rscript scripts/Rscripts/240907_discordant_pairs_figure.R
+```
+
+```bash
+# Map reads from STMY_2011_X_03 sample to TSIV assembly
+module load bwa/0.7.18
+module load samtools/1.20
+bwa index TSIV_STMY_2012_42.fasta 
+bwa mem -M TSIV_STMY_2012_42.fasta STMY_X_2011_03_1.fq STMY_X_2011_03_2.fq | samtools sort -O bam -o STMY_X_2011_03_align.sorted.bam -
+samtools index STMY_X_2011_03_align.sorted.bam
+
+# Extract discordant read pairs from STMY_2011_X_03 sample alignment to TSIV assembly 
+samtools view -f 1 -F 12 STMY_X_2011_03_align.sorted.bam | awk '$3 == "contig1" && $7 == "contig2" || $3 == "contig2" && $7 == "contig1"' > discordant_pairs.txt
+
+# Plot read positions
+Rscript scripts/Rscripts/241018_discordant_pairs_figure_STMY_2011_X_03.R
 ```
 
 Genome arrangements and core gene annotations were curated in the following script: `scripts/Rscripts/240906_prep_annotations_for_collinearity.Rmd`
