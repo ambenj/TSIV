@@ -2,7 +2,7 @@
 
 This repository contains the code used for following paper:
 
-Yoxsimer, A.M.; Offenberg, E.G.; Katzer, A.W.; Bell, M.A.; Massengill, R.L.; Kingsley, D.M. Genomic sequence of the threespine stickleback iridovirus (TSIV) from wild Gasterosteus in Stormy Lake, Alaska. 2024.
+Yoxsimer, A.M.; Offenberg, E.G.; Katzer, A.W.; Bell, M.A.; Massengill, R.L.; Kingsley, D.M. Genomic Sequence of the Threespine Stickleback Iridovirus (TSIV) from Wild *Gasterosteus aculeatus* in Stormy Lake, Alaska. *Viruses* 2024, 16, 1663. [https://doi.org/10.3390/v16111663](https://doi.org/10.3390/v16111663)
 
 *Note: these scripts were configured for analysis on the SCG Cluster at Stanford University and most would require adjusting paths and software in order to run elsewhere.*
 
